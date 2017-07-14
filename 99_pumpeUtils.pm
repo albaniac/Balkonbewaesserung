@@ -92,7 +92,6 @@ checkGrenzwerte(){
 sub
 getAktuelleTemperatur() {
   my $temp = ReadingsVal("$temp_sensor", "temperature", "");
-  Log 4, ("Aktuelle Temperatur: $temp");
   return $temp;
 }
 
@@ -101,7 +100,6 @@ sub
 getRegenwahrscheinlichkeit($) {
   my $uhrzeit = @_[0];
   my $regen = ReadingsVal("Wetter_PROPLANTA","fc0_chOfRain$uhrzeit","");
-  Log 4, ("Regenwahrscheinlichkeit um $uhrzeit: $regen");
   return $regen;
 }
 
