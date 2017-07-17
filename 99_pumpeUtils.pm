@@ -25,6 +25,7 @@ my $regen_abend = 50;
 
 my $temp_sensor = "Balkon_TX35DTH";
 my $pumpe_schalter = "Pumpe_Schalter";
+my $proplanta = "Wetter_PROPLANTA";
 my $bewasserung_zeit = 60;
 
 sub
@@ -99,7 +100,7 @@ getAktuelleTemperatur() {
 sub
 getRegenwahrscheinlichkeit($) {
   my $uhrzeit = @_[0];
-  my $regen = ReadingsVal("Wetter_PROPLANTA","fc0_chOfRain$uhrzeit","");
+  my $regen = ReadingsVal("$proplanta","fc0_chOfRain$uhrzeit","");
   return $regen;
 }
 
