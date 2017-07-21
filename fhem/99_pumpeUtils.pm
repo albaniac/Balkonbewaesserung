@@ -26,6 +26,7 @@ my $regen_abend = 50;
 my $temp_sensor = "Balkon_TX35DTH";
 my $pumpe_schalter = "Pumpe_Schalter";
 my $proplanta = "Wetter_PROPLANTA";
+my $pushover = "pushmsg";
 my $bewasserung_zeit = 60;
 
 sub
@@ -35,7 +36,8 @@ checkPumpe(){
     return;
   }
 
-  Log 3, ("Starte Bewässerung");
+  Log 3, ("PumpeUtils: Starte Bewässerung");
+  fhem("set pushmsg msg 'fhem' 'Starte Bewässerung für $bewasserung_zeit!' 0 ");
   fhem("set $pumpe_schalter on-for-timer $bewasserung_zeit");
 }
 
@@ -51,7 +53,7 @@ checkGrenzwerte(){
   else{
     $uhrzeit = "$hour";
   }
-  Log 4, ("checkGrenzwerte um $uhrzeit");
+  Log 2, ("PumpeUtils: checkGrenzwerte um $uhrzeit");
   # Werte setzen
   my ($min_temp, $max_regen) = (0)x2;
   if($uhrzeit == $morgen){
@@ -67,7 +69,7 @@ checkGrenzwerte(){
     $max_regen = $regen_abend;
   }
   else{
-    Log 4, ("Keine Beregnungszeit");
+    Log 2, ("PumpeUtils: Keine Beregnungszeit");
     return "0";
   }
 
@@ -75,17 +77,17 @@ checkGrenzwerte(){
   my $temp = getAktuelleTemperatur();
   my $regen = getRegenwahrscheinlichkeit($uhrzeit);
   if($temp eq "" || $regen eq ""){
-    Log 3, ("Temperatur oder Regenwahrscheinlichkeit konnten nicht geladen werden (Temperatur: $temp, Regen: $regen)");
+    Log 2, ("PumpeUtils: Temperatur oder Regenwahrscheinlichkeit konnten nicht geladen werden (Temperatur: $temp, Regen: $regen)");
   return "0";
   }
   
-  Log 4, ("Voraussetzungen für Bewässerung: \nTemperatur: $min_temp (ist: $temp)\nRegenwahrscheinlichkeit: $max_regen (ist: $regen)");
+  Log 2, ("PumpeUtils: Voraussetzungen für Bewässerung: \nTemperatur: $min_temp (ist: $temp)\nRegenwahrscheinlichkeit: $max_regen (ist: $regen)");
   if($min_temp < $temp && $max_regen > $regen){
-    Log 3, ("Voraussetzungen für Bewässerung erfüllt");
+    Log 2, ("PumpeUtils: Voraussetzungen für Bewässerung erfüllt");
     return "1";
   }
   else {
-    Log 4, ("Voraussetzungen für Bewässerung nicht erfüllt");
+    Log 2, ("PumpeUtils: Voraussetzungen für Bewässerung nicht erfüllt");
     return "0";
   }
 }
@@ -99,39 +101,9 @@ getAktuelleTemperatur() {
 # Regenwahrscheinlichkeit zur gegebenen Uhrzeit
 sub
 getRegenwahrscheinlichkeit($) {
-  my $uhrzeit = @_[0];
+  my $uhrzeit = $_[0];
   my $regen = ReadingsVal("$proplanta","fc0_chOfRain$uhrzeit","");
   return $regen;
 }
 
-
-
-##########################################################
-# Quelle: https://wiki.fhem.de/wiki/Gleitende_Mittelwerte_berechnen_und_loggen
-# myAverage
-# berechnet den Mittelwert aus LogFiles über einen beliebigen Zeitraum
-# 
-sub
-myAverage($$$)
-{
- my ($offset,$logfile,$cspec) = @_;
- my $period_s = strftime "%Y-%m-%d\x5f%H:%M:%S", localtime(time-$offset);
- my $period_e = strftime "%Y-%m-%d\x5f%H:%M:%S", localtime;
- my $oll = $attr{global}{verbose};
- $attr{global}{verbose} = 0; 
- my @logdata = split("\n", fhem("get $logfile - - $period_s $period_e $cspec"));
- $attr{global}{verbose} = $oll; 
- my ($cnt, $cum, $avg) = (0)x3;
- foreach (@logdata){
-  my @line = split(" ", $_);
-  if(defined $line[1] && "$line[1]" ne ""){
-   $cnt += 1;
-   $cum += $line[1];
-  }
- }
- if("$cnt" > 0){$avg = sprintf("%0.1f", $cum/$cnt)};
- Log 4, ("myAverage: File: $logfile, Field: $cspec, Period: $period_s bis $period_e, Count: $cnt, Cum: $cum, Average: $avg");
- return $avg;
-}
-##########################################################
 1;
