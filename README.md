@@ -2,7 +2,7 @@
 
 This repository contains the required software to build a watering using a pump (e.g. [Gardena Micro-Drip Blumenkastenbewässerung](http://www.gardena.com/de/produkte/citygardening/balkon/vollautomatische-blumenkastenbewasserung/900916701/)), the perl house automation server [FHEM](https://fhem.de/) and some additional sensors.
 
-Detailed information can be found on my blog: https://www.dev-eth0.de/
+Detailed information can be found on my blog: https://www.dev-eth0.de/blog/2017/07/20/balkonbewaesserung-basics.html
 
 ## Acknowledgments
 
