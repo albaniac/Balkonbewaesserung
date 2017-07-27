@@ -44,7 +44,7 @@
 #define TRIGGER_PIN  6  // Arduino pin tied to trigger pin on the ultrasonic sensor.
 #define ECHO_PIN     5  // Arduino pin tied to echo pin on the ultrasonic sensor.
 #define MAX_DISTANCE 300 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
-unsigned long SLEEP_TIME = 10000; // Calculate every 10 seconds
+unsigned long SLEEP_TIME = 3000; // Calculate every 10 seconds
 
 #define MY_RF24_CE_PIN 9
 #define MY_RF24_CS_PIN 10
@@ -61,7 +61,7 @@ void setup()
 
 void presentation() {
   // Send the sketch version information to the gateway and Controller
-  sendSketchInfo("Distance Sensor", "1.0");
+  sendSketchInfo("Distance Sensor", "1.1");
 
   // Register all sensors to gw (they will be created as child devices)
   present(CHILD_ID, S_DISTANCE);
